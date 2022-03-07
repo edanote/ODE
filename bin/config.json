@@ -1,0 +1,5 @@
+{ 
+   "M3":{"ruleA": "path_to_ruleA","comments":"comments A"},
+   "V1":{"ruleB": "path_to_ruleB","comments":"comments B"},
+   "M2":{"ruleC": "path_to_ruleC","comments":"comments C"}
+}

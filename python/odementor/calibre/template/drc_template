@@ -1,0 +1,11 @@
+LAYOUT PRIMARY {{cell_name}}
+LAYOUT PATH {{cell_name}}.gds
+LAYOUT SYSTEM GDSII
+
+DRC MAXIMUM RESULTS ALL
+DRC RESULTS DATABASE {{cell_name}}.asc
+DRC SUMMARY REPORT drc.sum
+
+DRC ICSTATION YES
+
+INCLUDE "{{rule_path}}"

@@ -1,0 +1,24 @@
+
+PRECISION 2000
+
+LAYER   MAP     32         DATATYPE      >=0  <=6      3200
+LAYER   V1      3200
+
+LAYER   MAP     34         DATATYPE      >=0  <=4      3400
+LAYER   M2     3400
+
+
+M2_drawing_color_test{
+    V1_V = ANGLE V1 > 89.9
+    V1_M2_REGION = ENCLOSURE V1_V M2 < 1 OPPOSITE  REGION
+    V1_H = ANGLE (V1 OR V1_M2_REGION) < 0.1
+    (EXPAND EDGE V1_H BY 0.1) NOT M2
+}
+
+V1_drawing_color_test{
+    COPY V1
+}
+
+//DRC CHECK MAP M2_drawing_color_test GDSII 1 1 test.gds APPEND _ode_xxx AUTOREF via_enclosure_ode_ruleA
+DRC CHECK MAP M2_drawing_color_test GDSII 1 1 test.gds APPEND _ode_ruleA AUTOREF via_enclosure_ode_ruleA
+DRC CHECK MAP V1_drawing_color_test GDSII 2 1 test1.gds APPEND _ode_ruleB AUTOREF via_enclosure_ode_ruleB

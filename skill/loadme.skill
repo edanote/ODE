@@ -1,0 +1,23 @@
+
+; THIS SCRIPT WILL LOAD ALL OF THE FILES ENDS WITH .il
+; DO NOT CHANGE THIS's APPENDIX NAME
+
+procedure(OCDLoadSkillInDir(dir)
+    files = getDirFiles(dir)
+    foreach(file files
+        file_fullpath = strcat(dir "/" file)
+        if((isFile(file_fullpath) && rexMatchp(".il$" file)) then
+            printf("load file: %s\n",file_fullpath)
+            load(file_fullpath)
+        )
+        if((isDir(file_fullpath) && (not rexMatchp("^\\." file))) then
+            OCDLoadSkillInDir(file_fullpath)
+        )
+        
+    )
+)
+
+let((odeHome)
+    odeHome = strcat(getShellEnvVar("ODE_HOME"),"/skill")
+    OCDLoadSkillInDir(odeHome)
+)
