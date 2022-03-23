@@ -3,6 +3,7 @@
 ; DO NOT CHANGE THIS's APPENDIX NAME
 
 procedure(OCDLoadSkillInDir(dir)
+let((file_fullpath files)
     files = getDirFiles(dir)
     foreach(file files
         file_fullpath = strcat(dir "/" file)
@@ -15,9 +16,12 @@ procedure(OCDLoadSkillInDir(dir)
         )
         
     )
-)
+) ; end of let
+) ; end of procedure
 
 let((odeHome)
-    odeHome = strcat(getShellEnvVar("ODE_HOME"),"/skill")
-    OCDLoadSkillInDir(odeHome)
+    if(isDir(getShellEnvVar("ODE_HOME")) then
+        odeHome = strcat(getShellEnvVar("ODE_HOME"),"/skill")
+        OCDLoadSkillInDir(odeHome)
+    )
 )

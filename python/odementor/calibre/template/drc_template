@@ -1,5 +1,5 @@
 LAYOUT PRIMARY {{cell_name}}
-LAYOUT PATH {{cell_name}}.gds
+LAYOUT PATH {{gds_path}}
 LAYOUT SYSTEM GDSII
 
 DRC MAXIMUM RESULTS ALL

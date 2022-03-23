@@ -4,17 +4,39 @@ import sys
 import re
 import sqlite3
 import jinja2
+from decimal import *
 from odemisc.odesetting import get_ode_template_path
 
+def calibredrv_gen_emptyref_gds(pv_result_dir,top_cell,ref_cells,gds_precision="1000"):
+    drv_units_database = Decimal("1e-6")/Decimal(gds_precision)
+    drv_units_user = Decimal("1")/Decimal(gds_precision)
+    calibre_template_dir = get_ode_template_path("calibre")
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(calibre_template_dir))
+    template = env.get_template('calibredrv_refcell_template.tcl')
+    calibredrv_template = template.render(top_cell = top_cell,cell_list = ref_cells,drv_units_user=drv_units_user,drv_units_database=drv_units_database)
+    with open(f"{pv_result_dir}/{top_cell}_drv.tcl","w") as f:
+        print(calibredrv_template,file=f)
+    status = os.system(f"cd {pv_result_dir};calibredrv {top_cell}_drv.tcl >& {top_cell}_drv.log")
 
-def run_drc(cell_name,rule_path,pv_result_dir):
+def calibredrv_merge_gds(pv_result_dir,top_cell,gds_path_list,gds_precision="1000",flatten_cell="False"):
+    drv_units_database = Decimal("1e-6")/Decimal(gds_precision)
+    drv_units_user = Decimal("1")/Decimal(gds_precision)
+    calibre_template_dir = get_ode_template_path("calibre")
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(calibre_template_dir))
+    template = env.get_template('calibredrv_combile_gds.tcl')
+    calibredrv_template = template.render(top_cell = top_cell,gds_list = gds_path_list,drv_units_user=drv_units_user,drv_units_database=drv_units_database,flatten_cell=flatten_cell)
+    with open(f"{pv_result_dir}/{top_cell}_drv.tcl","w") as f:
+        print(calibredrv_template,file=f)
+    status = os.system(f"cd {pv_result_dir};calibredrv {top_cell}_drv.tcl >& {top_cell}_drv.log")
+
+def run_calibre_drc(cell_name,rule_path,pv_result_dir,gds_path,core_num=4):
     calibre_template_dir = get_ode_template_path("calibre")
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(calibre_template_dir))
     template = env.get_template('drc_template')
-    drc_template_update = template.render(cell_name=cell_name,rule_path=rule_path)
+    drc_template_update = template.render(cell_name=cell_name,rule_path=rule_path,gds_path=gds_path)
     with open(f"{pv_result_dir}/{cell_name}.drc","w") as f:
         print(drc_template_update,file=f)
-    status = os.system(f"cd {pv_result_dir};calibre -drc -hier -turbo 4 {cell_name}.drc >& {cell_name}.log")
+    status = os.system(f"cd {pv_result_dir};calibre -drc -hier -turbo {core_num} {cell_name}.drc >& {cell_name}.log")
 
 def get_drc_results(drc_db_file,var = True,sql = False):
     """ parse drc results

@@ -47,14 +47,16 @@ class Pvgui(QWidget):
             pvSourceSingle = f"{self.__pvSourceWidthToosl}/{pvCheckType}"
             print(pvCheckType,file=sys.stderr,flush=True)
             if os.path.exists(f"{pvSourceSingle}/drc"):
-                self.__mainRunWidges[pvCheckType]=(PVdrc(pvSourceSingle, pvCheckType, pvDest, self.__inputData))
+                self.__mainRunWidges[pvCheckType]=(PVdrc(pvSourceSingle, pvCheckType, "drc", pvDest, self.__inputData))
             #                self.__mainRunWidges[-1].setContentsMargins(0,0,0,0)
             if os.path.exists(f"{pvSourceSingle}/lvs"):
-                self.__mainRunWidges[pvCheckType]=(PVlvs(pvSourceSingle, pvCheckType, pvDest, self.__inputData))
+                self.__mainRunWidges[pvCheckType]=(PVlvs(pvSourceSingle, pvCheckType, "lvs", pvDest, self.__inputData))
             if os.path.exists(f"{pvSourceSingle}/xrc"):
-                self.__mainRunWidges[pvCheckType]=(PVxrc(pvSourceSingle, pvCheckType, pvDest, self.__inputData))
+                self.__mainRunWidges[pvCheckType]=(PVxrc(pvSourceSingle, pvCheckType, "xrc" , pvDest, self.__inputData))
             if os.path.exists(f"{pvSourceSingle}/perc"):
-                self.__mainRunWidges[pvCheckType]=( PVperc(pvSourceSingle, pvCheckType, pvDest, self.__inputData))
+                self.__mainRunWidges[pvCheckType]=( PVperc(pvSourceSingle, pvCheckType, "perc", pvDest, self.__inputData))
+            if os.path.exists(f"{pvSourceSingle}/butian"):
+                self.__mainRunWidges[pvCheckType]=(PVbutian(pvSourceSingle, pvCheckType, "butian", pvDest, self.__inputData))
 
         # dynamic adjust check types
         self.updateCheckWidget()
@@ -195,7 +197,7 @@ class Inputdata(QGroupBox):
 class PVcommonOptions(QDialog):
     """common options for drc/lvs/perc"""
 
-    def __init__(self, pvSourceSingle, pvCheckType, pvDest, inputData):
+    def __init__(self, pvSourceSingle, pvCheckType, pvBasicType, pvDest, inputData):
         QDialog.__init__(self)
 
         self.__inputData = inputData
@@ -233,7 +235,10 @@ class PVcommonOptions(QDialog):
         self.__ruledeckVersion.addItems(self.__ruledeckVersionList)
         self.__ruledeckVersion.currentIndexChanged.connect(self.__updatePvSourcePath)
         self.__ruledeckPathText = QLabel("rule deck path")
-        self.__ruledeckPath = QLineEdit(f"{self.__pvSourceSingle}/latest/{pvCheckType}.rule")
+        if pvBasicType == "butian":
+            self.__ruledeckPath = QLineEdit(f"{self.__pvSourceSingle}/latest/")
+        else:
+            self.__ruledeckPath = QLineEdit(f"{self.__pvSourceSingle}/latest/{pvCheckType}.rule")
         self.__ruledeckPath.setReadOnly(True)
         self.__commentButton = QPushButton("add comments")
         self.__commentButton.setCheckable(True)
@@ -320,9 +325,6 @@ class PVcommonOptions(QDialog):
     @Slot()
     def PressButton(self,inputData):
         cmd = f""
-#        print(f'load("/home/study/aa")',file=sys.stderr,flush=True)
-        print(f'print("11111111")',end=" ",file=sys.stdout,flush=True)
-        print(f'load("/home/study/aa")',end=" ",file=sys.stdout,flush=True)
         layLibName = self.__inputData.getLayLibName()
         print(f'lib name is : {layLibName}',file=sys.stderr,flush=True)
         layCellName = self.__inputData.getLayCellName()
@@ -331,20 +333,18 @@ class PVcommonOptions(QDialog):
         print(f'view name is : {layViewName}',file=sys.stderr,flush=True)
         print(f'rule deck path : {self.__ruledeckPath.text()}',file=sys.stderr,flush=True)
         print(f'result dir is : {self.__result.text()}',file=sys.stderr,flush=True)
-        print(f'print("22222222")',end=" ",file=sys.stdout,flush=True)
-        print(f'print("33333333")',end=" ",file=sys.stdout,flush=True)
         rule_deck = self.__ruledeckPath.text()
         result_dir = self.__result.text()
-        os.system(f"odebutian_shell.py -rule {rule_deck} -resultdir {result_dir} -laylib {layLibName} -laycell {layCellName} -layview {layViewName}")
+        os.system(f"odebutian_shell.py -checktype butian -checktype butian -rule {rule_deck} -resultdir {result_dir} -laylib {layLibName} -laycell {layCellName} -layview {layViewName} -core {self.__coreNum.currentText()}")
 
 
 class PVdrc(QGroupBox):
     global gui
-    def __init__(self, pvSourceSingle, pvCheckType, pvDest, inputData):
+    def __init__(self, pvSourceSingle, pvCheckType, pvBasicType, pvDest, inputData):
         QGroupBox.__init__(self, f"{pvCheckType} setting")
         self.drcsetting = QVBoxLayout()
         #        self.drcsetting.setContentsMargins(0, 0, 0, 0)
-        self.__commonWidget = PVcommonOptions(pvSourceSingle, pvCheckType, pvDest, inputData)
+        self.__commonWidget = PVcommonOptions(pvSourceSingle, pvCheckType,pvBasicType, pvDest, inputData)
         self.drcsetting.addWidget(self.__commonWidget)
 
         self.drcmain = QVBoxLayout()
@@ -409,11 +409,11 @@ class CreateCheckboxList(QHBoxLayout):
         #        self.__checkGroupLayout.setContentsMargins(0,0,0,0)
 
 class PVlvs(QGroupBox):
-    def __init__(self, pvSourceSingle, pvCheckType, pvDest, inputData):
+    def __init__(self, pvSourceSingle, pvCheckType, pvBasicType, pvDest, inputData):
         QGroupBox.__init__(self, f"{pvCheckType} setting")
         self.lvssetting = QVBoxLayout()
         self.lvssetting.setContentsMargins(0, 0, 0, 0)
-        self.__commonWidget = PVcommonOptions(pvSourceSingle, pvCheckType, pvDest, inputData)
+        self.__commonWidget = PVcommonOptions(pvSourceSingle, pvCheckType, pvBasicType, pvDest, inputData)
         self.lvssetting.addWidget(self.__commonWidget)
         self.setLayout(self.lvssetting)
 
@@ -424,11 +424,11 @@ class PVlvs(QGroupBox):
 class PVxrc(QGroupBox):
     global gui
 
-    def __init__(self, pvSourceSingle, pvCheckType, pvDest, inputData):
+    def __init__(self, pvSourceSingle, pvCheckType, pvBasicType, pvDest, inputData):
         QGroupBox.__init__(self, f"{pvCheckType} setting")
         self.xrcsetting = QVBoxLayout()
         self.xrcsetting.setContentsMargins(0, 0, 0, 0)
-        self.__commonWidget = PVcommonOptions(pvSourceSingle, pvCheckType, pvDest, inputData)
+        self.__commonWidget = PVcommonOptions(pvSourceSingle, pvCheckType, pvBasicType, pvDest, inputData)
         self.xrcsetting.addWidget(self.__commonWidget)
         self.setLayout(self.xrcsetting)
 
@@ -490,6 +490,24 @@ class PVxrc(QGroupBox):
                         groups.append(line.split()[1])
         return (groups)
 
+class PVbutian(QGroupBox):
+    global gui
+    def __init__(self, pvSourceSingle, pvCheckType, pvBasicType, pvDest, inputData):
+        QGroupBox.__init__(self, f"{pvCheckType} setting")
+        self.drcsetting = QVBoxLayout()
+        #        self.drcsetting.setContentsMargins(0, 0, 0, 0)
+        self.__commonWidget = PVcommonOptions(pvSourceSingle, pvCheckType, pvBasicType, pvDest, inputData)
+        self.drcsetting.addWidget(self.__commonWidget)
+
+        self.drcmain = QVBoxLayout()
+        self.drcmain.setContentsMargins(0, 0, 0, 0)
+        self.drcmain.addLayout(self.drcsetting)
+
+        self.setLayout(self.drcmain)
+
+    def updatePvResultPath(self, pvCellName):
+        groups = self.__commonWidget.updatePvResultPath(pvCellName)
+
 class CreateCheckboxListXrc(QGroupBox):
     def __init__(self,groupName,groups,defaultGroup):
         QGroupBox.__init__(self,groupName)
@@ -507,11 +525,11 @@ class CreateCheckboxListXrc(QGroupBox):
         #        self.__checkGroupLayout.setContentsMargins(0,0,0,0)
 
 class PVperc(QGroupBox):
-    def __init__(self, pvSourceSingle, pvCheckType, pvDest, inputData):
+    def __init__(self, pvSourceSingle, pvCheckType, pvBasicType, pvDest, inputData):
         QGroupBox.__init__(self, f"{pvCheckType} setting")
         self.percsetting = QVBoxLayout()
         self.percsetting.setContentsMargins(0, 0, 0, 0)
-        self.__commonWidget = PVcommonOptions(pvSourceSingle, pvCheckType, pvDest, inputData)
+        self.__commonWidget = PVcommonOptions(pvSourceSingle, pvCheckType, pvBasicType,  pvDest, inputData)
         self.percsetting.addWidget(self.__commonWidget)
         self.setLayout(self.percsetting)
 
