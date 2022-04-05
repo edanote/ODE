@@ -1,0 +1,18 @@
+/*
+wechat official account : edanote
+github : https://github.com/edanote/ODE
+lint score : 100
+
+add menu to library manger
+please create link with name cdsLibMgr.il under home
+*/
+
+
+lmgrCreateMenu("ODELibMenu" '(("label" "ODE")))
+lmgrAddMenuItems( "" "" '("ODELibMenu"))
+
+lmgrCreateMenu("ODELibMenuProcess" '(("label" "process")))
+lmgrAddMenuItems("ODELibMenu" "" '("ODELibMenuProcess"))
+lmgrCreateMenuItem("ODEMigrateProcessSubItem" "simple" '(("label" "migrate schematic") ("callback" ("ODEMigrateProcessGui"))))
+lmgrAddMenuItems("ODELibMenuProcess" "L"  list("ODEMigrateProcessSubItem"))
+
