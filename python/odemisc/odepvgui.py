@@ -213,7 +213,7 @@ class PVcommonOptions(QDialog):
         self.__openlavaText = QLabel("queue")
         self.__openlavaQueue = QComboBox()
         self.__openlavaQueue.addItems(["pv", "tapeout", "nobsub"])
-        self.__resultText = QLabel(f"{pvCheckType} result path")
+        self.__resultText = QLabel(f"result path")
         self.__result = QLineEdit(f"{self.__pvDest}/{self.__username}/{self.__pvCheckType}/{self.__pvCellName}")
         self.__result.textChanged.connect(self.__updatePvResultPathCombobox)
         self.__coreAndResultLayout = QHBoxLayout()

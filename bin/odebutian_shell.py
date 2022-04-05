@@ -92,9 +92,13 @@ if basic_check_type == "butian":
     gds_path_list = " ".join(gds_path_list)
     calibredrv_merge_gds(pv_result_dir,ode_cell_name,gds_path_list,gds_precision=org_gds_precision,flatten_cell="True")
         
-    import_gds(lay_lib_name,ode_gds_path,pv_result_dir)
-    skill_inst = f'ODEAddInst("{lay_lib_name}" "{lay_cell_name}" "layout" "{lay_lib_name}" "{ode_cell_name}" "layout" ?prompt t)'
-    print(skill_inst,file=sys.stdout,flush=True)
+    (status,import_log) = import_gds(lay_lib_name,ode_gds_path,pv_result_dir)
+    print(import_log,file=sys.stderr,flush=True)
+    if import_log:
+        skill_cmd = f'ODEMessageDialog("gds import fail")'
+    else:
+        skill_cmd = f'ODEAddInst("{lay_lib_name}" "{lay_cell_name}" "layout" "{lay_lib_name}" "{ode_cell_name}" "layout" ?prompt t)'
+    print(skill_cmd,file=sys.stdout,flush=True)
 
 ##import_gds(lay_lib_name,gds_path,pv_result_dir)
 #generated_gds = list(filter(lambda x:x.endswith(".gds"),os.listdir(pv_result_dir)))

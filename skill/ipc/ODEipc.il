@@ -1,3 +1,11 @@
+/*
+wechat official account : edanote
+github : https://github.com/edanote/ODE
+lint score : 100
+
+procedure to run log as command or print as log
+
+*/
 
 procedure(ODEStdoutHandler(ipcId data)
       printf("run ipc command:%s" data)

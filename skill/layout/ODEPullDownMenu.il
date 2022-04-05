@@ -1,3 +1,13 @@
+/*
+wechat official account : edanote
+github : https://github.com/edanote/ODE
+lint score : 100
+
+create pull down menu in layout/layoutXL
+
+*/
+
+
 procedure( ODECreateLayoutPulldownMenu()
 ;  if( boundp( 'ODELayoutPulldownMenu )
 ;     then ODELayoutPulldownMenu

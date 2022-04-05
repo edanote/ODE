@@ -9,8 +9,11 @@ foreach gds_path $gdslist {
     set gds_split [split $gds_name "."]
     set cell_name [lindex $gds_split 0]
     set Lone [layout create $gds_path]
-    $Lnew create cell $cell_name $Lone [$Lone topcell]
-    $Lnew create ref {{top_cell}} $cell_name 0 0 0 0 1
+    if {[$Lone topcell] != ""} {
+        $Lone flatten cell [$Lone topcell]
+        $Lnew create cell $cell_name $Lone [$Lone topcell]
+        $Lnew create ref {{top_cell}} $cell_name 0 0 0 0 1
+    }
 }
 
 if { {{flatten_cell}} } {

@@ -1,5 +1,6 @@
 
 import os
+import subprocess
 import jinja2
 from odemisc.odesetting import get_ode_template_path
 
@@ -16,7 +17,7 @@ def export_gds(lib_name,cell_name,view_name,pv_result_dir,hier_depth=32767):
     strmout_gds_template_file_path = f"{pv_result_dir}/strmout_template"
     with open(strmout_gds_template_file_path,"w") as f:
         print(strmout_gds_template_update,file=f)
-    status = os.system(f"strmout -templateFile {strmout_gds_template_file_path} >& {pv_result_dir}/cmd.log")
+    status = os.system(f"strmout -templateFile {strmout_gds_template_file_path} >& {pv_result_dir}/strmout_ode.log")
 
 def import_gds(lib_name,gds_name,pv_result_dir):
     virtuoso_template_dir = get_ode_template_path("virtuoso")
@@ -26,5 +27,7 @@ def import_gds(lib_name,gds_name,pv_result_dir):
     strmin_gds_template_file_path = f"{pv_result_dir}/strmin_template"
     with open(strmin_gds_template_file_path,"w") as f:
         print(strmin_gds_template_update,file=f)
-    status = os.system(f"strmin -templateFile {strmin_gds_template_file_path} >& {pv_result_dir}/cmd.log")
+    os.system(f"strmin -templateFile {strmin_gds_template_file_path} >& {pv_result_dir}/strmout_ode.log")
+    (status,log) =  subprocess.getstatusoutput(f"grep ERROR {pv_result_dir}/strmout_ode.log")
+    return(status,log)
     

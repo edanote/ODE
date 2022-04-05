@@ -1,3 +1,9 @@
+/*
+wechat official account : edanote
+github : https://github.com/edanote/ODE
+lint score : 100
+*/
+
 ; These code are developed at home
 ; Copy Right Belong To Nan Chen
 

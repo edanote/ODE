@@ -1,3 +1,9 @@
+/*
+wechat official account : edanote
+github : https://github.com/edanote/ODE
+lint score : 100
+
+*/
 
 
 procedure(ODEAddInst(libName cellName viewName extraLib extraCell extraView @key (prompt nil))
@@ -9,11 +15,13 @@ let((cv instAdd)
     instAdd=dbOpenCellViewByType(extraLib extraCell extraView)
     dbCreateInst(cv instAdd strcat("IODE_" extraCell) 0.0:0.0 "R0")
     dbSave(cv)
-    dbClose(cv)
-    dbClose(instAdd)
     if(prompt then
         ODEMessageDialog(strcat("instance add to " libName "/" cellName "/" viewName))
+        dbRefreshCellView(instAdd)
+        dbRefreshCellView(cv)
     )
+    dbClose(cv)
+    dbClose(instAdd)
 ) ; end of let
 ) ; end of procedure
 
