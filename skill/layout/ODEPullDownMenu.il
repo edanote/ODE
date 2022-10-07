@@ -20,7 +20,11 @@ procedure( ODECreateLayoutPulldownMenu()
              ?name 'ODEbutian
              ?itemText "butian"
              ?callback   "ODEbutian()"
-;             ?callback   "ipcBeginProcess(\"/home/study/run.py\" \"\" 'ODEStdoutHandler 'ODEStderrHandler)"
+            )
+          hiCreateMenuItem( ; list of menu items
+             ?name 'ODErcAnalysis
+             ?itemText "rc analysis"
+             ?callback   "ipcBeginProcess(\"rcAnalysys.py\" \"\" 'ODEStdoutHandler 'ODEStderrHandler)"
             )
        ) ; list
     ) ; hiCreatePulldownMenu

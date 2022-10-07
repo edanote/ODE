@@ -13,6 +13,8 @@ foreach gds_path $gdslist {
         $Lone flatten cell [$Lone topcell]
         $Lnew create cell $cell_name $Lone [$Lone topcell]
         $Lnew create ref {{top_cell}} $cell_name 0 0 0 0 1
+        $Lnew flatten cell {{top_cell}}
+        $Lnew delete cell $cell_name
     }
 }
 

@@ -13,7 +13,7 @@ valMap lib_new cell_new cdf_new prop_old prop_new
 */
 
 procedure(ODEMigrateProcess(library processMap )
-let((mapPort lineList oldSymLib oldSymCell newSymLib newSymCell oldProp newProp libDB devicePropTable cv allProp tableType tableValue temp singlePropItem cellName lambdaKey lambdaTable newValue nextLine instName instOrient instxy symbolId deviceNameTable oldSymLibCell libName newSymProp newSymVal oldSymVal valMapKey valMapTable )
+let((mapPort lineList oldSymLib oldSymCell newSymLib newSymCell oldProp newProp libDB devicePropTable cv allProp tableType tableValue temp singlePropItem cellName lambdaKey lambdaTable newValue nextLine instName instOrient instxy symbolId deviceNameTable oldSymLibCell libName newSymProp newSymVal oldSymVal valMapKey valMapTable cellParaId cellParaType)
 mapPort=infile(processMap)
 unless(libDB=ddGetObj(library) error("Library %s does not exists\n" library))
 
@@ -120,7 +120,12 @@ foreach(cell libDB~>cells
                     if(member(temp valMapTable~>?) then
                         newValue = valMapTable[temp]
                     )
-                    dbReplaceProp(inst newProp tableType[newProp] newValue)
+                    cellParaId = cdfFindParamByName(cdfGetInstCDF(inst) newProp)
+                    cellParaType = cellParaId~>paramType
+                    if(cellParaType  == "int"
+                        newValue = atoi(newValue)
+                    )
+                    dbReplaceProp(inst newProp cellParaType newValue)
                 )
             )
         ) ; end of for instances
