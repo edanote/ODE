@@ -1,0 +1,60 @@
+#! tvf
+
+#namespace import tvf::VARIABLE
+
+
+#tvf::LAYER 
+#tvf::LAYER MAP
+
+# set ode_pin_layer [list M2_voltage_vh M2_voltage_vl m2 M3_voltage_vh M3_voltage_vl m3]
+# set ode_denied_voltage_text_list [list]
+# set ode_denied_voltage_layer_list [list]
+
+source "$env(PV_SOURCE_DIR)/Calibre/common/common_define.tvf"
+
+foreach {ode_vh_pin ode_vl_pin ode_layer}  $ode_pin_layer {
+    tvf::SETLAYER ode_${ode_vh_pin}_text_vh = DFM TEXT ${ode_vh_pin} PROPERTY NUMBER vh
+    tvf::SETLAYER ode_${ode_vl_pin}_text_vl = DFM TEXT ${ode_vl_pin} PROPERTY NUMBER vl
+
+    tvf::SETLAYER ode_${ode_vh_pin}_text_shape = DFM PROPERTY MERGE ode_${ode_vh_pin}_text_vh
+    tvf::SETLAYER ode_${ode_vl_pin}_text_shape = DFM PROPERTY MERGE ode_${ode_vl_pin}_text_vl
+
+    tvf::SETLAYER ode_${ode_vh_pin}_text_dev = ode_${ode_vh_pin}_text_shape AND $ode_layer
+    tvf::SETLAYER ode_${ode_vl_pin}_text_dev = ode_${ode_vl_pin}_text_shape AND $ode_layer
+
+    tvf::DEVICE edanote_vh ode_${ode_vh_pin}_text_dev ${ode_layer}(PLUS) <ode_${ode_vh_pin}_text_vh> \[PROPERTY vh vh = DFM_NUMeric_VALue( ode_${ode_vh_pin}_text_vh, "vh" )\]
+    tvf::DEVICE edanote_vl ode_${ode_vl_pin}_text_dev ${ode_layer}(PLUS) <ode_${ode_vl_pin}_text_vl> \[PROPERTY vl vl = DFM_NUMeric_VALue( ode_${ode_vl_pin}_text_vl, "vl" )\]
+
+
+    tvf::ERC SELECT CHECK ode_${ode_vh_pin}_too_near
+    tvf::RULECHECK ode_${ode_vh_pin}_too_near {
+        tvf::@ ${ode_vh_pin} TEXT too near
+        tvf::@ Minimum distance is 2dbu
+        tvf::SETLAYER ode_${ode_vh_pin}_merged_conflicts = "DFM PROPERTY MERGE ode_${ode_vh_pin}_text_vh \[- = COUNT(ode_${ode_vh_pin}_text_vh)\] > 1"
+        tvf::OUTLAYER "flatten ode_${ode_vh_pin}_merged_conflicts"
+    }
+
+    tvf::ERC SELECT CHECK ode_${ode_vh_pin}_outside_metal
+    tvf::RULECHECK ode_${ode_vh_pin}_outside_metal {
+        tvf::@ ${ode_vh_pin} not put on metal
+        tvf::OUTLAYER "ode_${ode_vh_pin}_text_shape NOT INTERACT ${ode_layer}"
+
+    }
+}
+
+foreach ode_denied_voltage_text $ode_denied_voltage_text_list {
+    tvf::ERC SELECT CHECK ode_${ode_denied_voltage_text}_text_is_denied
+    tvf::RULECHECK ode_${ode_denied_voltage_text}_text_is_denied {
+    tvf::@ ${ode_denied_voltage_text} is denied to use
+    tvf::OUTLAYER "EXPAND TEXT ? ${ode_denied_voltage_text} BY 0.005"
+    }
+}
+
+foreach ode_denied_voltage_layer $ode_denied_voltage_layer_list {
+    tvf::ERC SELECT CHECK ode_${ode_denied_voltage_layer}_shape_is_denied
+    tvf::RULECHECK ode_${ode_denied_voltage_layer}_shape_is_denied {
+    tvf::@ ${ode_denied_voltage_layer} is denied to use
+    tvf::OUTLAYER "COPY ${ode_denied_voltage_layer}"
+    }
+}
+

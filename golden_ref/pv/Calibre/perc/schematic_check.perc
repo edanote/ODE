@@ -1,0 +1,60 @@
+/* 
+github https://github.com/edanote/ODE
+wechat official account:edanote
+*/
+
+SOURCE PATH greatpin.cdl
+SOURCE PRIMARY "greatpin"
+SOURCE SYSTEM SPICE
+
+PERC NETLIST SOURCE
+PERC REPORT "perc.rep"
+MASK SVDB DIRECTORY "svdb" QUERY
+
+SOURCE CASE YES
+
+PERC PROPERTY edanote_vh vh
+PERC PROPERTY edanote_vl vl
+
+PERC LOAD aerc INIT aerc_init SELECT get_voltage_symbol_vh get_voltage_symbol_vl
+
+TVF FUNCTION aerc [/*
+
+package require CalibreLVS_PERC
+
+set tcl_precision 7
+
+proc aerc_init {} {
+
+    perc::define_net_type "Power"   {vdd?}
+    perc::define_net_type "Ground"  {gnd?}
+}
+
+
+proc get_voltage_symbol_vh {} {
+    # find nets connect to edanote_vh
+    perc::check_device -type edanote_vh -comment "voltage mark vh symbol" -condition get_voltage_symbol_vh_cond
+} 
+
+proc get_voltage_symbol_vh_cond {dev} {
+    set vh_value [perc::property $dev vh]
+    set vh_netname [perc::name [perc::get_nets $dev -name PLUS]]
+    perc::report_base_result -value "ODE voltage mark vh [perc::name $dev] on net $vh_netname voltage is $vh_value"
+    return 1
+}
+
+
+proc get_voltage_symbol_vl {} {
+    # find nets connect to edanote_vl
+    perc::check_device -type edanote_vl -comment "voltage mark vl symbol" -condition get_voltage_symbol_vl_cond
+} 
+
+proc get_voltage_symbol_vl_cond {dev} {
+    set vl_value [perc::property $dev vl]
+    set vl_netname [perc::name [perc::get_nets $dev -name PLUS]]
+    perc::report_base_result -value "ODE voltage mark vl [perc::name $dev] on net $vl_netname voltage is $vl_value"
+    return 1
+}
+
+
+*/]
