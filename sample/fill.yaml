@@ -1,0 +1,144 @@
+# layout_info/signal/power/ground is a keyword in file
+# please do not change
+layout_info:
+    signal:
+        power : "VDD VDDA"
+        ground : "GND VSS"
+    rule_var:
+        viax_with : 0.02
+        viax_length : 0.01
+#    rule_var:
+#        !include rule_var.yaml
+         
+    
+# fill_definition is a keyword in file
+# please do not change
+fill_definition:
+    # viax_group can be change
+    # in python script, this name is saved in variable via_group
+    viax_group:
+        # gds_layer/layer/purpose is a keyword in file
+        # please do not change
+        gds_layer:
+            layer: 1
+            purpose: 2
+        # fill_shapes is a keyword in file
+        # please do not change
+        fill_shapes:
+            # viax_1x1/viax_1x2 can be change
+            # it will be the shape_name of the DFM SPEC FILL SHAPE
+            # in python script, this name is saved in variable fill_shape_name
+            # contents of it saved in dict fill_shape
+            viax_1x1:
+                # viax/viay/stepx/stepy/as_is is a keyword in file
+                # please do not change
+                viax: 0.1
+                viay: 0.1
+                stepx : 0.2
+                stepy : 0.3
+                # as is means the contents will add to DFM SPEC FILL SHAPE
+                as_is:
+                    SPACEXY : 
+                       - space1x space1y layer1
+                       - space2x space2y layer2
+                    "SPACEXY INTERIOR" :
+                       - space1x space1y layer1
+                       - space2x space2y layer2
+                    SHAPESPACE :
+                       - shapespacex shapespacey
+            viax_1x2:
+                viax: 0.1
+                viay: 0.2
+                stepx : 0.3
+                stepy : 0.4
+    via1_group:
+        gds_layer:
+            layer: 3
+            purpose: 4
+#        lu_layer:
+#            lower_layer : lower1
+#            upper_layer : upper1
+        fill_shapes:
+            via1_1x1:
+                viax: 0.2
+                viay: 0.2
+                stepx : 0.5
+                stepy : 0.6
+                as_is:
+                    SPACEXY : 
+                       - space1x space1y layer1
+                       - space2x space2y layer2
+                    "SPACEXY INTERIOR" :
+                       - space1x space1y layer1
+                       - space2x space2y layer2
+                    SHAPESPACE :
+                       - shapespacex shapespacey
+            via1_1x2:
+                viax: 0.2
+                viay: 0.4
+                stepx : 0.6
+                stepy : 0.7
+            via1_2x2:
+                viax: 0.4
+                viay: 0.4
+                stepx : 0.8
+                stepy : 0.9
+    via2_group:
+        gds_layer:
+            layer: 5
+            purpose: 6
+#        lu_layer:
+#            lower_layer : lower2
+#            upper_layer : upper2
+        fill_shapes:
+            via2_1x1:
+                viax: 0.3
+                viay: 0.3
+                stepx : 0.6
+                stepy : 0.7
+            via2_1x2:
+                viax: 0.3
+                viay: 0.6
+                stepx : 0.9
+                stepy : 1.0
+
+# fills is a keyword in file
+# please do not change
+fills:
+    # via1_fill can be change
+    # in python script, this name is saved in variable fill_name
+    # it was the spec_name in DFM SPEC FILL
+    via1_fill:
+        check_type: db gds recommendation
+        # spec_fill is a keyword in file
+        # please do not change
+        # contents in spec_fill will generate FILLSHAPE in DFM SPEC FILL
+        # first index is i in line 105/128
+        # the fill shape in same index will generate in same FILLSHAPE
+        # second index is j in line 107/129
+        spec_fill:
+            # i
+            -
+                # j
+                # the via_group is used to get gds number
+                - via1_group via1_2x2
+                - viax_group viax_1x2
+                - "FILLSHAPE_OPTION OPPOSITE EXTENDED AUTOROTATE D EFFORT 2 REPEAT 10 FILLMAX"
+            - 
+                - via1_group via1_1x2
+#                - viax_group vixx_2x2
+        # lu_layer/lower_layer/upper_layer is a keyword in file
+        # please do not change
+        lu_layer:
+            lower_layer : lower1
+            upper_layer : upper1
+    via2_fill:
+        check_type: db gds recommendation
+        spec_fill:
+            -
+                - via2_group via2_1x1
+                - via2_group via2_1x2
+                - "FILLSHAPE_OPTION OPPOSITE EXTENDED AUTOROTATE D EFFORT 2 REPEAT 10 FILLMAX"
+        lu_layer:
+            lower_layer : lower2
+            upper_layer : upper2
